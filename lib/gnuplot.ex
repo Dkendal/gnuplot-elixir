@@ -64,13 +64,14 @@ defmodule Gnuplot do
     result =
       receive do
         {_, {:data, message}} -> loop(port, cmd, [message | output])
-        {_, {:exit_status, 0}} -> {:ok, cmd}
+        {_, {:exit_status, 0}} -> {:ok, cmd, output}
         {_, {:exit_status, _}} -> {:error, cmd, Enum.reverse(output)}
       after
         timeout() -> :timeout
       end
 
     {_, :close} = send(port, {self(), :close})
+
     result
   end
 
